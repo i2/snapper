@@ -51,6 +51,9 @@
 #include "snapper/Btrfs.h"
 #include "snapper/BtrfsUtils.h"
 #endif
+//#ifdef ENABLE_ZFS
+#include "snapper/ZfsUtils.h"
+//#endif
 #ifdef ENABLE_SELINUX
 #include "snapper/Selinux.h"
 #endif
@@ -1089,6 +1092,11 @@ namespace snapper
 	    "no-"
 #endif
 	    "ext4,"
+
+#ifndef ENABLE_ZFS
+	    "no-"
+#endif
+	    "zfs,"
 
 #ifndef ENABLE_XATTRS
 	    "no-"

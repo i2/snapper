@@ -38,6 +38,7 @@ AC_PATH_PROG([LVSBIN], [lvs], [/sbin/lvs])
 AC_PATH_PROG([LVCHANGEBIN], [lvchange], [/sbin/lvchange])
 AC_PATH_PROG([LVMBIN], [lvm], [/sbin/lvm])
 AC_PATH_PROG([LVRENAMEBIN], [lvrename], [/sbin/lvrename])
+AC_PATH_PROG([ZFSBIN], [zfs], [/sbin/zfs])
 
 AC_DEFINE_UNQUOTED([CHSNAPBIN], ["$CHSNAPBIN"], [Path of chsnap program.])
 AC_DEFINE_UNQUOTED([CPBIN], ["$CPBIN"], [Path of cp program.])
@@ -51,6 +52,7 @@ AC_DEFINE_UNQUOTED([LVSBIN], ["$LVSBIN"], [Path of lvs program.])
 AC_DEFINE_UNQUOTED([LVCHANGEBIN], ["$LVCHANGEBIN"], [Path of lvchange program.])
 AC_DEFINE_UNQUOTED([LVMBIN], ["$LVMBIN"], [Path of lvm program.])
 AC_DEFINE_UNQUOTED([LVRENAMEBIN], ["$LVRENAMEBIN"], [Path of lvrename program.])
+AC_DEFINE_UNQUOTED([ZFSBIN], ["$ZFSBIN"], [Path of zfs program.])
 
 CFLAGS="${CFLAGS} -std=c99 -Wall -Wextra -Wformat -Wmissing-prototypes -Wno-unused-parameter"
 CXXFLAGS="${CXXFLAGS} -std=c++11 -Wall -Wextra -Wformat -Wnon-virtual-dtor -Wno-unused-parameter -Wsuggest-override"
@@ -93,7 +95,16 @@ if test "x$with_lvm" = "xyes"; then
 	AC_DEFINE(ENABLE_LVM, 1, [Enable LVM thin-provisioned snapshots support])
 fi
 
-if test "x$with_btrfs" != "xyes" -a "x$with_lvm" != "xyes" -a "x$with_ext4" != "xyes"; then
+AC_ARG_ENABLE([zfs], AC_HELP_STRING([--disable-zfs],[Disable Zfs internal snapshots support]),
+		[with_zfs=$enableval],[with_zfs=yes])
+
+AM_CONDITIONAL(ENABLE_ZFS, [test "x$with_zfs" = "xyes"])
+
+if test "x$with_zfs" = "xyes"; then
+	AC_DEFINE(ENABLE_ZFS, 1, [Enable Zfs internal snapshots support])
+fi
+
+if test "x$with_btrfs" != "xyes" -a "x$with_lvm" != "xyes" -a "x$with_ext4" != "xyes" -a "x$with_zfs" != "xyes"; then
 	AC_MSG_ERROR([You have to enable at least one snapshot type (remove some --disable-xxx parameter)])
 fi
 
